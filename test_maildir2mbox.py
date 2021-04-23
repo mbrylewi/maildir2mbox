@@ -81,63 +81,67 @@ class TestMaildir2Mbox(unittest.TestCase):
             self.assertEqual( mbox_content.count('Subject: toto read'), 1)
             self.assertEqual( mbox_content.count('Subject: toto unread'), 1)
 
+    def test_successful_conversion_recurse_all_folders(self):
+        self.assertEqual( convert(Path('test_data/.INBOX.toto'), self.mbox_path, True, True) , 0 )
 
-    def test_successful_conversion_recurse(self): 
-        self.assertEqual( convert(Path('test_data/.INBOX.toto'), self.mbox_path, True) , 0 )
-        self.assertEqual( self.mbox_path.exists(), True)
-        self.assertEqual( self.mbox_path.is_file(), True)
-        self.assertEqual( self.mbox_dir.exists(), True)
-        self.assertEqual( self.mbox_dir.is_dir(), True)
+    # def test_successful_conversion_recurse(self):
+    #     self.assertEqual( convert(Path('test_data/.INBOX.toto'), self.mbox_path, True) , 0 )
+    #     self.assertEqual( self.mbox_path.exists(), True)
+    #     self.assertEqual( self.mbox_path.is_file(), True)
+    #     self.assertEqual( self.mbox_dir.exists(), True)
+    #     self.assertEqual( self.mbox_dir.is_dir(), True)
+    #
+    #     self.assertEqual(self.mbox_titi_path.exists(), True)
+    #     self.assertEqual(self.mbox_titi_path.is_file(), True)
+    #     self.assertEqual(self.mbox_titi_dir.exists(), True)
+    #     self.assertEqual(self.mbox_titi_dir.is_dir(), True)
+    #
+    #     self.assertEqual(self.mbox_tutu_path.exists(), True)
+    #     self.assertEqual(self.mbox_tutu_path.is_file(), True)
+    #     self.assertEqual(self.mbox_tutu_dir.exists(), True)
+    #     self.assertEqual(self.mbox_tutu_dir.is_dir(), True)
+    #
+    #     self.assertEqual(self.mbox_coincoin_path.exists(), True)
+    #     self.assertEqual(self.mbox_coincoin_path.is_file(), True)
+    #     self.assertEqual(self.mbox_coincoin_dir.exists(), True)
+    #     self.assertEqual(self.mbox_coincoin_dir.is_dir(), True)
+    #
+    #     self.assertEqual(self.mbox_coucou_path.exists(), True)
+    #     self.assertEqual(self.mbox_coucou_path.is_file(), True)
+    #     self.assertEqual(self.mbox_coucou_dir.exists(), True)
+    #     self.assertEqual(self.mbox_coucou_dir.is_dir(), True)
+    #
+    #     with self.mbox_path.open() as f:
+    #         mbox_content = f.read()
+    #         self.assertEqual( mbox_content.count('From '), 2)
+    #         self.assertEqual( mbox_content.count('Subject: toto read'), 1)
+    #         self.assertEqual( mbox_content.count('Subject: toto unread'), 1)
+    #
+    #     with self.mbox_titi_path.open() as f:
+    #         mbox_content = f.read()
+    #         self.assertEqual( mbox_content.count('From '), 2)
+    #         self.assertEqual( mbox_content.count('Subject: titi read'), 1)
+    #         self.assertEqual( mbox_content.count('Subject: titi unread'), 1)
+    #
+    #     with self.mbox_tutu_path.open() as f:
+    #         mbox_content = f.read()
+    #         self.assertEqual( mbox_content.count('From '), 2)
+    #         self.assertEqual( mbox_content.count('Subject: tutu read'), 1)
+    #         self.assertEqual( mbox_content.count('Subject: tutu unread'), 1)
+    #
+    #     with self.mbox_coincoin_path.open() as f:
+    #         mbox_content = f.read()
+    #         self.assertEqual( mbox_content.count('From '), 2)
+    #         self.assertEqual( mbox_content.count('Subject: coincoin read'), 1)
+    #         self.assertEqual( mbox_content.count('Subject: coincoin unread'), 1)
+    #
+    #     with self.mbox_coucou_path.open() as f:
+    #         mbox_content = f.read()
+    #         self.assertEqual( mbox_content.count('From '), 2)
+    #         self.assertEqual( mbox_content.count('Subject: coucou read'), 1)
+    #         self.assertEqual( mbox_content.count('Subject: coucou unread'), 1)
+    #
 
-        self.assertEqual(self.mbox_titi_path.exists(), True)
-        self.assertEqual(self.mbox_titi_path.is_file(), True)
-        self.assertEqual(self.mbox_titi_dir.exists(), True)
-        self.assertEqual(self.mbox_titi_dir.is_dir(), True)
-
-        self.assertEqual(self.mbox_tutu_path.exists(), True)
-        self.assertEqual(self.mbox_tutu_path.is_file(), True)
-        self.assertEqual(self.mbox_tutu_dir.exists(), True)
-        self.assertEqual(self.mbox_tutu_dir.is_dir(), True)
-
-        self.assertEqual(self.mbox_coincoin_path.exists(), True)
-        self.assertEqual(self.mbox_coincoin_path.is_file(), True)
-        self.assertEqual(self.mbox_coincoin_dir.exists(), True)
-        self.assertEqual(self.mbox_coincoin_dir.is_dir(), True)
-
-        self.assertEqual(self.mbox_coucou_path.exists(), True)
-        self.assertEqual(self.mbox_coucou_path.is_file(), True)
-        self.assertEqual(self.mbox_coucou_dir.exists(), True)
-        self.assertEqual(self.mbox_coucou_dir.is_dir(), True)
-
-        with self.mbox_path.open() as f:
-            mbox_content = f.read()
-            self.assertEqual( mbox_content.count('From '), 2)
-            self.assertEqual( mbox_content.count('Subject: toto read'), 1)
-            self.assertEqual( mbox_content.count('Subject: toto unread'), 1)
-
-        with self.mbox_titi_path.open() as f:
-            mbox_content = f.read()
-            self.assertEqual( mbox_content.count('From '), 2)
-            self.assertEqual( mbox_content.count('Subject: titi read'), 1)
-            self.assertEqual( mbox_content.count('Subject: titi unread'), 1)
-
-        with self.mbox_tutu_path.open() as f:
-            mbox_content = f.read()
-            self.assertEqual( mbox_content.count('From '), 2)
-            self.assertEqual( mbox_content.count('Subject: tutu read'), 1)
-            self.assertEqual( mbox_content.count('Subject: tutu unread'), 1)
-
-        with self.mbox_coincoin_path.open() as f:
-            mbox_content = f.read()
-            self.assertEqual( mbox_content.count('From '), 2)
-            self.assertEqual( mbox_content.count('Subject: coincoin read'), 1)
-            self.assertEqual( mbox_content.count('Subject: coincoin unread'), 1)
-
-        with self.mbox_coucou_path.open() as f:
-            mbox_content = f.read()
-            self.assertEqual( mbox_content.count('From '), 2)
-            self.assertEqual( mbox_content.count('Subject: coucou read'), 1)
-            self.assertEqual( mbox_content.count('Subject: coucou unread'), 1)
 
 
     def test_appending_to_existing_mbox(self): 
@@ -151,6 +155,8 @@ class TestMaildir2Mbox(unittest.TestCase):
             self.assertEqual( mbox_content.count('Subject: toto unread'), 1)
             self.assertEqual( mbox_content.count('Subject: titi read'), 1)
             self.assertEqual( mbox_content.count('Subject: titi unread'), 1)
+
+
 
 class TestMaildir2MboxLongExecution(TestMaildir2Mbox):
 
@@ -174,4 +180,3 @@ if __name__ ==  '__main__':
         del argv[argv.index('--long-tests')]
 
     unittest.main(verbosity=True, defaultTest=tests_to_run, argv=argv)
-    
