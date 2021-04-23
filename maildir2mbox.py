@@ -19,7 +19,8 @@ Very first version from: http://yergler.net/blog/2010/06/06/batteries-included-o
 The file is under no license/public domain. See LICENSE.txt for more details.
 """
 
-import os, sys, argparse, mailbox, datetime
+import os
+import sys, argparse, mailbox, datetime
 from typing import Optional
 from  pathlib import Path
 
