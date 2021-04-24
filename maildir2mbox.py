@@ -19,7 +19,8 @@ Very first version from: http://yergler.net/blog/2010/06/06/batteries-included-o
 The file is under no license/public domain. See LICENSE.txt for more details.
 """
 
-import os, sys, argparse, mailbox, datetime
+import os
+import sys, argparse, mailbox, datetime
 from typing import Optional
 from  pathlib import Path
 
@@ -92,7 +93,7 @@ def maildir2mailbox(maildir_path, mbox_path):
 
     return 0
 
-def convert(maildir_path, mbox_path, recurse):
+def convert(maildir_path, mbox_path, recurse, recurse_all_folders = False):
     # type: (Path, Path, bool) -> int
     """ Convert maildirs to mbox
 
@@ -170,9 +171,17 @@ def convert(maildir_path, mbox_path, recurse):
     # mbox_toto.sbd/coincoin.sbd/coucou
     # mbox_toto.sbd/coincoin.sbd/coucou.sbd
     mdp_prefix = maildir_path.parts[-1] + '.'
-    maildir_sub_path = [ (Path(dirinfo[0])/subdir).relative_to(maildir_path) for dirinfo in os.walk(str(maildir_path))
-                                        for subdir in dirinfo[1] 
-                                            if subdir.startswith('.') ]
+    if recurse_all_folders:
+        maildir_sub_path = [ (Path(dirinfo[0])/subdir).relative_to(maildir_path) for dirinfo in os.walk(str(maildir_path))
+                                            for subdir in dirinfo[1] if subdir not in ['cur','new']]
+
+    for p in maildir_sub_path:
+        info(p)
+
+    else:
+        maildir_sub_path = [ (Path(dirinfo[0])/subdir).relative_to(maildir_path) for dirinfo in os.walk(str(maildir_path))
+                                            for subdir in dirinfo[1]
+                                                if subdir.startswith('.') ]
     for subdir in maildir_sub_path:
         mbox_dir_sub_path = Path(str(mbox_path) + '.sbd/' + subdir.as_posix()[1:].replace('/.', '.sbd/')+'.sbd')
         mbox_sub_path = Path(str(mbox_dir_sub_path)[:-4])
@@ -199,8 +208,11 @@ if __name__ == '__main__':
     parser.add_argument('-r', '--recurse', dest='recurse', help="Process all mail folders included in maildir_path. An equivalent "
                         "structure is recreated in the mbox format", 
                         action='store_true')
+    parser.add_argument('-a', '--recurse_all', dest='recurse_all',
+                        help="When processing subfolders do not limit to folders starting with '.'",
+                        action='store_true')
     args = parser.parse_args()
 
     sys.exit(
-        convert(Path(args.maildir_path), Path(args.mbox_filename), bool(args.recurse))
+        convert(Path(args.maildir_path), Path(args.mbox_filename), bool(args.recurse), bool(args.recurse_all))
     )
