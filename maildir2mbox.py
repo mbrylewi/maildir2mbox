@@ -174,6 +174,10 @@ def convert(maildir_path, mbox_path, recurse, recurse_all_folders = False):
     if recurse_all_folders:
         maildir_sub_path = [ (Path(dirinfo[0])/subdir).relative_to(maildir_path) for dirinfo in os.walk(str(maildir_path))
                                             for subdir in dirinfo[1] if subdir not in ['cur','new']]
+
+    for p in maildir_sub_path:
+        info(p)
+
     else:
         maildir_sub_path = [ (Path(dirinfo[0])/subdir).relative_to(maildir_path) for dirinfo in os.walk(str(maildir_path))
                                             for subdir in dirinfo[1]
@@ -210,5 +214,5 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     sys.exit(
-        convert(Path(args.maildir_path), Path(args.mbox_filename), bool(args.recurse), bool(args.recurse_all_folders))
+        convert(Path(args.maildir_path), Path(args.mbox_filename), bool(args.recurse), bool(args.recurse_all))
     )
