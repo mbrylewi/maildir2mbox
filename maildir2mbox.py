@@ -22,13 +22,14 @@ The file is under no license/public domain. See LICENSE.txt for more details.
 import os
 import sys, argparse, mailbox, datetime
 from typing import Optional
-from  pathlib import Path
+from pathlib import Path
 
 def info(*args):
     # type: (*str) -> None
     '''Display informative message'''
     prefix = datetime.datetime.now().time().replace(microsecond=0).isoformat()
     print(prefix, *args)
+
 
 def error(*args):
     # type: (*str) -> None
@@ -45,7 +46,7 @@ def maildir2mailbox(maildir_path, mbox_path):
         return 1
 
     if not ((maildir_path/'cur').exists() and (maildir_path/'new').exists()):
-        error('Missing `new` and/or `cur` subdirectories in path %s, aborting conversion' % maildir_path)
+        error('Missing `new` and/or `cur` subdirectories in path %s, aborting conversion for this path' % maildir_path)
         return 1
 
     mboxdir_path = Path('%s.sbd' % mbox_path)
@@ -173,15 +174,15 @@ def convert(maildir_path, mbox_path, recurse, recurse_all_folders = False):
     mdp_prefix = maildir_path.parts[-1] + '.'
     if recurse_all_folders:
         maildir_sub_path = [ (Path(dirinfo[0])/subdir).relative_to(maildir_path) for dirinfo in os.walk(str(maildir_path))
-                                            for subdir in dirinfo[1] if subdir not in ['cur','new']]
+                                            for subdir in dirinfo[1] if subdir not in ['cur', 'new']]
 
     for p in maildir_sub_path:
         info(p)
 
-    else:
-        maildir_sub_path = [ (Path(dirinfo[0])/subdir).relative_to(maildir_path) for dirinfo in os.walk(str(maildir_path))
-                                            for subdir in dirinfo[1]
-                                                if subdir.startswith('.') ]
+    # else:
+    #     maildir_sub_path = [ (Path(dirinfo[0])/subdir).relative_to(maildir_path) for dirinfo in os.walk(str(maildir_path))
+    #                                         for subdir in dirinfo[1]
+    #                                             if subdir.startswith('.') ]
     for subdir in maildir_sub_path:
         mbox_dir_sub_path = Path(str(mbox_path) + '.sbd/' + subdir.as_posix()[1:].replace('/.', '.sbd/')+'.sbd')
         mbox_sub_path = Path(str(mbox_dir_sub_path)[:-4])
