@@ -173,8 +173,8 @@ def convert(maildir_path, mbox_path, recurse, recurse_all_folders = False):
     # mbox_toto.sbd/coincoin.sbd/coucou.sbd
     mdp_prefix = maildir_path.parts[-1] + '.'
     if recurse_all_folders:
-        maildir_sub_path = [ (Path(dirinfo[0])/subdir).relative_to(maildir_path) for dirinfo in os.walk(str(maildir_path))
-                                            for subdir in dirinfo[1] if subdir not in ['cur', 'new']]
+        maildir_sub_path = [(Path(dirinfo[0])/subdir).relative_to(maildir_path) for dirinfo in os.walk(str(maildir_path))
+                                            for subdir in dirinfo[1] if subdir not in ['cur', 'new', 'tmp']]
 
     for p in maildir_sub_path:
         info(p)
