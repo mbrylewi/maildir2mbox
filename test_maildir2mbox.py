@@ -172,7 +172,7 @@ class TestMaildir2MboxLongExecution(TestMaildir2Mbox):
             self.assertEqual( mbox_content.count('Subject: tutu 999 read'), 1)
 
 
-if __name__ ==  '__main__':
+if __name__ == '__main__':
     tests_to_run = ['TestMaildir2Mbox']
     argv = sys.argv[:]
     if '--long-tests' in argv:
