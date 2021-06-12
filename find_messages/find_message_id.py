@@ -1,6 +1,8 @@
 import sys
 import os
+import logging
 
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 def find_messages(maildir_path, mbox_path):
 
@@ -12,9 +14,11 @@ def find_messages(maildir_path, mbox_path):
             with open(path, 'rb') as read_obj:
                 for line in read_obj:
                     if line.startswith(b"Message-ID"):
+                        line = line.replace(b" ", b"")
                         ids1.append(line)
                         paths1[line] = path
-                        # print(line)
+
+    logging.info(f"Maildir: found {len(set(ids1))} messages.")
 
     ids2 = []
 
@@ -24,8 +28,9 @@ def find_messages(maildir_path, mbox_path):
             with open(path, 'rb') as read_obj:
                 for line in read_obj:
                     if line.startswith(b"Message-ID"):
-                        ids2.append(line)
+                        ids2.append(line.replace(b" ", b""))
 
+    logging.info(f"Mbox: found {len(set(ids2))} messages.")
 
     for item in set(ids1)-set(ids2):
         print(f"{paths1[item]} {item}")

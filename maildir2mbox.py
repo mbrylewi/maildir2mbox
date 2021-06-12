@@ -140,7 +140,7 @@ def convert(maildir_path, mbox_path, recurse, recurse_all_folders = False):
 
     # look for the directories starting just like maildir_path
     mdp_prefix = maildir_path.parts[-1] + '.'
-    maildir_sub_path = [ p for p in maildir_path.parent.iterdir()
+    maildir_sub_path = [p for p in maildir_path.parent.iterdir()
                             if p.name != mdp_prefix[:-1] and p.name.startswith(mdp_prefix)
                             ]
     maildir_sub_path2 = [p for p in maildir_sub_path 
@@ -174,7 +174,7 @@ def convert(maildir_path, mbox_path, recurse, recurse_all_folders = False):
     mdp_prefix = maildir_path.parts[-1] + '.'
     if recurse_all_folders:
         maildir_sub_path = [(Path(dirinfo[0])/subdir).relative_to(maildir_path) for dirinfo in os.walk(str(maildir_path))
-                                            for subdir in dirinfo[1] if subdir not in ['cur', 'new', 'tmp']]
+                                            for subdir in dirinfo[1] if subdir not in ['cur', 'new', 'tmp', 'courierimapkeywords']]
 
     for p in maildir_sub_path:
         info(p)
