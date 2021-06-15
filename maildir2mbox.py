@@ -21,6 +21,7 @@ The file is under no license/public domain. See LICENSE.txt for more details.
 
 import os
 import sys, argparse, mailbox, datetime
+import traceback
 from typing import Optional
 from pathlib import Path
 
@@ -38,7 +39,7 @@ def error(*args):
     print('ERROR', prefix, *args)
 
 
-def maildir2mailbox(maildir_path, mbox_path):
+def maildir2mailbox(maildir_path, mbox_path, test=False):
     # type: (Path, Path) -> int
 
     if not maildir_path.exists():
@@ -49,10 +50,10 @@ def maildir2mailbox(maildir_path, mbox_path):
         error('Missing `new` and/or `cur` subdirectories in path %s, aborting conversion for this path' % maildir_path)
         return 1
 
-    mboxdir_path = Path('%s.sbd' % mbox_path)
-    if not mboxdir_path.exists():
-        mboxdir_path.mkdir(parents=True, exist_ok=True)
-    elif mbox_path.is_dir():
+    # mboxdir_path = Path('%s.sbd' % mbox_path)
+    # if not mboxdir_path.exists():
+    #     mboxdir_path.mkdir(parents=True, exist_ok=True)
+    if mbox_path.is_dir():
         error('%s exists but is not a directory!' % mbox_path)
         return 1
 
@@ -77,13 +78,15 @@ def maildir2mailbox(maildir_path, mbox_path):
         info('Processing %d messages in %s' % (mails, maildir_path))
         for i, v in enumerate(maildir.iteritems()):
             key, msg = v
+            if test and i > 100:
+                break
             if (i % 100) == 99:
                 info('Progress: msg %d of %d' % (i+1, mails))
             try:
                 mbox.add(msg)
             except Exception:
                 error('Exception while processing msg with key: %s' % key)
-                #traceback.print_exc()
+                # traceback.print_exc()
                 raise
     finally:
         # close and unlock
@@ -94,17 +97,18 @@ def maildir2mailbox(maildir_path, mbox_path):
 
     return 0
 
-def convert(maildir_path, mbox_path, recurse, recurse_all_folders = False):
+def convert(maildir_path, mbox_path, recurse, recurse_all_folders = False, test=False):
     # type: (Path, Path, bool) -> int
     """ Convert maildirs to mbox
 
     maildir_path: path to the maildir directory containing new, cur and tmp directories
     mbox_path: path to the mbox file, already existing or to be created.
     recurse: if True, process also mail subfolders of maildir_path
+    test: If True, system will process only first 100 messages in a folder to check the sructure
     """
     # Creates the main mailbox
 
-    result = maildir2mailbox(maildir_path, mbox_path)
+    result = maildir2mailbox(maildir_path, mbox_path, test=test)
 
     # There are two types of subfolders for maildir format. The official
     # one is that a maildir directory is an official directory if it starts
@@ -160,7 +164,7 @@ def convert(maildir_path, mbox_path, recurse, recurse_all_folders = False):
         mbox_sub_path = Path(str(mbox_dir_sub_path)[:-4])
         mbox_dir_sub_path.mkdir(parents=True, exist_ok=True)
         info('%s -> %s' % (subdir, mbox_sub_path))
-        result += maildir2mailbox(subdir, mbox_sub_path)
+        result += maildir2mailbox(subdir, mbox_sub_path, test=test)
 
 
     # .INBOX.toto/.coincoin
@@ -171,7 +175,7 @@ def convert(maildir_path, mbox_path, recurse, recurse_all_folders = False):
     # mbox_toto.sbd/coincoin.sbd
     # mbox_toto.sbd/coincoin.sbd/coucou
     # mbox_toto.sbd/coincoin.sbd/coucou.sbd
-    mdp_prefix = maildir_path.parts[-1] + '.'
+
     if recurse_all_folders:
         maildir_sub_path = [(Path(dirinfo[0])/subdir).relative_to(maildir_path) for dirinfo in os.walk(str(maildir_path))
                                             for subdir in dirinfo[1] if subdir not in ['cur', 'new', 'tmp', 'courierimapkeywords']]
@@ -184,10 +188,16 @@ def convert(maildir_path, mbox_path, recurse, recurse_all_folders = False):
     #                                         for subdir in dirinfo[1]
     #                                             if subdir.startswith('.') ]
     for subdir in maildir_sub_path:
-        mbox_dir_sub_path = Path(str(mbox_path) + '.sbd/' + subdir.as_posix()[1:].replace('/.', '.sbd/')+'.sbd')
-        mbox_sub_path = Path(str(mbox_dir_sub_path)[:-4])
-        mbox_dir_sub_path.mkdir(parents=True, exist_ok=True)
-        result += maildir2mailbox(maildir_path / subdir, mbox_sub_path)
+        p = subdir.as_posix()
+        p = p.replace(".", "_")
+        mbox_dir_path = Path(str(mbox_path) + "/" + str(p))
+        mbox_file_path = Path(str(mbox_dir_path) + "/mbox.sbd")
+
+        try:
+            mbox_dir_path.mkdir(parents=True, exist_ok=True)
+        except NotADirectoryError:
+            raise
+        result += maildir2mailbox(maildir_path / subdir, mbox_file_path, test=test)
 
     if result > 0:
         info('Done with %d errors.' % result)
