@@ -222,8 +222,11 @@ if __name__ == '__main__':
     parser.add_argument('-a', '--recurse_all', dest='recurse_all',
                         help="When processing subfolders do not limit to folders starting with '.'",
                         action='store_true')
+    parser.add_argument('-t', '--test', dest='test',
+                        help="Process only fordt 100 messages in all folders to test directory structure",
+                        action='store_true')
     args = parser.parse_args()
 
     sys.exit(
-        convert(Path(args.maildir_path), Path(args.mbox_filename), bool(args.recurse), bool(args.recurse_all))
+        convert(Path(args.maildir_path), Path(args.mbox_filename), bool(args.recurse), bool(args.recurse_all), bool(args.test))
     )
